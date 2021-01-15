@@ -1,13 +1,13 @@
 import React, { Component } from 'react';
 import axios from 'axios';
 import DatePicker from 'react-date-picker';
-import { getUrl, dateToString, isEmptyValid } from '../Util/util';
+import { getUrl, dateToString, isEmptyValid, dateFomat } from '../Util/util';
 
 class DogMain extends Component {
     constructor(prosp) {
         super(prosp);
         var date = new Date();
-        date.setFullYear(2017);
+        date.setFullYear(2020);
         date.setMonth(0);
         date.setDate(1);
 
@@ -41,6 +41,7 @@ class DogMain extends Component {
         window.addEventListener("scroll", this.scrollEvent, true);
     }
     componentWillUnmount() {
+        this.mount = false;
         window.removeEventListener("scroll", this.scrollEvent);
         window.removeEventListener("resize", this.resizeHeight);
     }
@@ -131,7 +132,7 @@ class DogMain extends Component {
             if (!isEmptyValid(res.data)) {
                 if(this.state.reset) {
                     await this.setState({
-                        searchData : []
+                        searchData : [],
                     })
                 }
                 this.setState({
@@ -144,11 +145,12 @@ class DogMain extends Component {
         })
     }
     // 검색 버튼 클릭
-    searchOnClick = () => {
-        this.setState({
+    searchOnClick = async () => {
+        await this.setState({
             page : 0,
             reset : true
         })
+        document.getElementById("searchData-wrap").scrollTop = 0;
         this.getSearchData();
     }
     scrollEvent = () => {
@@ -156,7 +158,7 @@ class DogMain extends Component {
         const scrollTop = document.getElementById("searchData-wrap").scrollTop;
         const clientHeight = document.documentElement.clientHeight;
 
-        console.log(scrollHeight + "/" + scrollTop + "/" + clientHeight)
+        console.log(scrollTop + clientHeight + "/" + scrollHeight)
         if (scrollTop + clientHeight >= scrollHeight && this.state.progress === false) {
             this.setState({
                 reset : false
@@ -251,20 +253,35 @@ class DogMain extends Component {
     }
     // 유기동물 조회 렌더링
     happyDogRender = () => {
-        console.log(this.state.searchData)
+        function kindCd(kind) {
+            if (kind.indexOf('[개]')  > -1) {
+                return kind.substring(4,kind.length);
+            } else if (kind.indexOf('[고양이]')  > -1) {
+                return kind.substring(6,kind.length);
+            }
+        }
+
         return (
             <div id="searchData-wrap" className="searchData-wrap">
-                {
-                    this.state.searchData.length > 0 && this.state.searchData.map((hp, index) => {
-                        return (
-                            <div className="list-data" key={index}>
-                                <div className="img-wrap">
-                                    <img src={hp.filename} alt="이미지"/>
+                <div className="searchData-content">
+                    {
+                        this.state.searchData.length > 0 && this.state.searchData.map((hp, index) => {
+                            return (
+                                <div className="list-data" key={index}>
+                                    <div className="img-wrap">
+                                        <img src={hp.filename} alt="이미지"/>
+
+                                    </div>
+                                    <div className="desc-wrap">
+                                        <p>{hp.noticeNo}</p>
+                                        <p>{dateFomat(hp.happenDt.toString())}</p>
+                                        <p>{kindCd(hp.kindCd)}</p>
+                                    </div>
                                 </div>
-                            </div>
-                        )
-                    })
-                }
+                            )
+                        })
+                    }
+                </div>
             </div>
         )
     }
@@ -298,9 +315,9 @@ class DogMain extends Component {
                 <div className="result-wrap">
                     {this.happyDogRender()}
                 </div>
-                {/* <div className="footer">
+                <div className="footer">
 
-                </div> */}
+                </div>
             </>
         );
     }

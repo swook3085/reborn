@@ -1,5 +1,5 @@
 export function getUrl() {
-    var url = "http://192.168.35.138:21389";
+    var url = "http://192.168.0.17:21389";
 
     return url;
 }
@@ -37,6 +37,18 @@ export function dateToString(date) {
 
     return result;
 }
+
+export function dateFomat(date) {
+    var result;
+    var year = date.substring(0,4)
+    var month =  date.substring(4,6)
+    var day = date.substring(6,8)
+
+    result = `${year}-${month}-${day}`;
+
+    return result;
+}
+
 
 function leadingZeros(n, digits) {
     var zero = '';
