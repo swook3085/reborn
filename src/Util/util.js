@@ -1,5 +1,5 @@
 export function getUrl() {
-    var url = "http://192.168.0.17:21389";
+    var url = "http://192.168.35.138:21389";
 
     return url;
 }
@@ -59,4 +59,15 @@ function leadingZeros(n, digits) {
         zero += '0';
     }
     return zero + n;
-  }
+}
+// 몇개월 전 날짜 구하기
+export function prevMonthYear(month) {
+    var date = new Date();
+    var monthYear = date.getMonth();
+    if(isNaN(month)) {
+        date.setMonth(monthYear - parseInt(month));
+    } else {
+        date.setMonth(monthYear -month);
+    }
+    return date;
+}

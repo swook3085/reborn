@@ -65,7 +65,8 @@ input {
 }
 .searchData-content {
    width: 100%;
-   height: 100%;
+   height: calc(100% - 25px);
+   margin-top: 25px;
 }
 .search-img-wrap {
     display: none;
@@ -226,13 +227,16 @@ input {
     }
     .result-wrap {
         top: 191px;
-        height: calc(100% - 191px);
+        height: calc(100% - 271px);
     }
     .react-date-picker__inputGroup__year {
         min-width : 31px;
     }
     .list-data {
         width: 21%;
+    }
+    .footer {
+        height: 80px;
     }
 }
 @media screen and (min-width : 1280px) {  
@@ -272,14 +276,14 @@ input {
     }
     .result-wrap {
         top: 100px;
-        height: calc(100% - 100px);
+        height: calc(100% - 180px);
     }
     .searchData-wrap {
         width: 100%;
     }
     .searchData-content {
         max-width: 1200px;
-        margin : 0 auto;
+        margin : 25px auto;
     }
     .list-data {
         width: 16%;

@@ -1,20 +1,18 @@
+/* eslint-disable eqeqeq */
 import React, { Component } from 'react';
 import axios from 'axios';
 import DatePicker from 'react-date-picker';
-import { getUrl, dateToString, isEmptyValid, dateFomat } from '../Util/util';
+import { getUrl, dateToString, isEmptyValid, dateFomat, prevMonthYear } from '../Util/util';
 
 class DogMain extends Component {
     constructor(prosp) {
         super(prosp);
-        var date = new Date();
-        date.setFullYear(2020);
-        date.setMonth(0);
-        date.setDate(1);
+        var date = prevMonthYear(3);
 
         this.root = document.getElementById("root");
         this.state = {
             page : 0,               // 검색페이지
-            progress : false,
+            progress : false,       // 로딩
             upkind : 0,             // 축종코드 - 개 : 417000 - 고양이 : 422400 - 기타 : 429900
             kind : 0,               // 품종
             pageNo : 1,             // 페이지 정보
@@ -34,7 +32,14 @@ class DogMain extends Component {
         await this.setState({
             progress : true
         })
-        await this.getSido();
+
+        if(!isEmptyValid(window.localStorage.getItem("sido"))) {
+            this.setState({
+                sidoData : JSON.parse(window.localStorage.getItem("sido"))
+            })
+        } else {
+            await this.getSido();
+        }
         this.getSearchData();
         this.root.style.height = window.innerHeight + 'px';
         window.addEventListener('resize', this.resizeHeight, true);
@@ -57,7 +62,8 @@ class DogMain extends Component {
             console.log(res);
             this.setState({
                 sidoData : res.data.items.item
-            })
+            });
+            window.localStorage.setItem("sido", JSON.stringify(res.data.items.item));
         });
     }
     // 시군구 정보 가져오기
@@ -158,12 +164,12 @@ class DogMain extends Component {
         const scrollTop = document.getElementById("searchData-wrap").scrollTop;
         const clientHeight = document.documentElement.clientHeight;
 
-        console.log(scrollTop + clientHeight + "/" + scrollHeight)
+        // console.log(scrollTop + clientHeight + "/" + scrollHeight)
         if (scrollTop + clientHeight >= scrollHeight && this.state.progress === false) {
             this.setState({
                 reset : false
             })
-            this.getSearchData();
+            // this.getSearchData();
         }
     }
     inputOnChange = state => async event => {
@@ -254,10 +260,12 @@ class DogMain extends Component {
     // 유기동물 조회 렌더링
     happyDogRender = () => {
         function kindCd(kind) {
-            if (kind.indexOf('[개]')  > -1) {
+            if (kind.indexOf('[개]') > -1) {
                 return kind.substring(4,kind.length);
-            } else if (kind.indexOf('[고양이]')  > -1) {
+            } else if (kind.indexOf('[고양이]') > -1) {
                 return kind.substring(6,kind.length);
+            } else if (kind.indexOf('[기타축종]') > -1) {
+                return kind.substring(1,5);
             }
         }
 
